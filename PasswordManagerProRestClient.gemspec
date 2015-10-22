@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'PasswordManagerProRestClient'
-  s.version     = '0.0.2pre'
+  s.version     = '0.0.3pre'
   s.date        = '2015-10-10'
   s.summary     = "Pssword Manager Pro Rest Client"
   s.description = "A simple gem for fetching passwords over the rest api of Password Manager Pro"

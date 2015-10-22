@@ -1,6 +1,10 @@
 require 'net/http'
 require 'json'
 class PasswordManagerProRestClient
+  attr_accessor :server
+  attr_accessor :api_key
+  attr_accessor :port
+  attr_accessor :enable_insecure_ssl
 
   def initialize(server, api_key, port = 7272, enable_insecure_ssl = false)
     @server = server
