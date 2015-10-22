@@ -49,39 +49,16 @@ class PasswordManagerProRestClient
   end
 
   def self.get_resource_account_password(resource_id, account_id)
-    if(resourceid.is_a? Integer and accountid.is_a? Integer)
-      #Get All Resouces
-      methodUri = "resources/#{resource_id}/accounts/#{account_id}/password?"
-    else
-      #Get the specific Resource
-      methodUri = self.get_resource_account_id(resource_id,account_id)
-      id_fetch = self.get(methodUri)
-      methodUri = "resources/#{resource_id}/accounts/#{account_id}/password?"
+    if(resourceid.is_a? String and accountid.is_a? String)
+      #Fetch Based on Resource Names. Resolve IDs.
+      resource_id, account_id = self.get_resource_account_id(resource_id,account_id)
     end
+    methodUri = "resources/#{resource_id}/accounts/#{account_id}/password?"
     return self.get(methodUri)
   end
 
-  def self.get_resource_id
-    if(resourceid.nil?)
-      #Get All Resouces
-      methodUri = "https://<Host-Name-of-PMP-Server OR IP address>:7272/restapi/json /v1/resources?AUTHTOKEN=#{@apikey}"
-    else
-      #Get the specific Resource
-      methodUri = "https://<Host-Name-of-PMP-Server OR IP address>:7272/restapi/json /v1/resources/<Resource ID>"
-    end
-    resp = Net::HTTP.get_response(URI.parse(methodUri))
-    return resp.body
-  end
-
   def self.get_resource_account_id(resource_name, account_name)
-    if(resourceid.nil?)
-      #Get All Resouces
-      methodUri = "https://<Host-Name-of-PMP-Server OR IP address>:7272/restapi/json /v1/resources?AUTHTOKEN=#{resource_name}"
-    else
-      #Get the specific Resource
-      methodUri = "https://<Host-Name-of-PMP-Server OR IP address>:7272/restapi/json /v1/resources/<Resource ID>"
-    end
-    resp = Net::HTTP.get_response(URI.parse(account_name))
-    return resp.body
+    id_fetch = self.get("resources/resourcename/#{resource_name}/accounts/accountname/#{account_name}?")
+    return id_fetch["RESOURCEID"].to_i, id_fetch["ACCOUNTID"].to_i
   end
 end
