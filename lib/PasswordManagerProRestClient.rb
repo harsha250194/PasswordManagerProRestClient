@@ -2,64 +2,66 @@ require 'net/http'
 require 'json'
 class PasswordManagerProRestClient
 
-  def initialize(server, apikey, port = 7272, enableinsecuressl = false)
+  def initialize(server, api_key, port = 7272, enable_insecure_ssl = false)
     @server = server
-    @apikey = apikey
+    @api_key = api_key
     @port = port
-    @baseserveruri = "https://" + server + ":" + port + "/restapi/json/v1/"
-    @enableinsecuressl = enableinsecuressl
+    @base_server_uri = "https://" + server + ":" + port + "/restapi/json/v1/"
+    @enable_insecure_ssl = enable_insecure_ssl
   end
 
-  def self.get(uristring)
-    fulluri = "https://#{@baseserveruri}:#{@port}/restapi/json/v1/#{uristring}&AUTHTOKEN=#{@apikey}"
-    uri = URI.parse(uristring)
+  def self.get(uri_string)
+    full_uri = "https://#{@baseserveruri}:#{@port}/restapi/json/v1/#{uri_string}&AUTHTOKEN=#{@api_key}"
+    uri = URI.parse(full_uri)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-    if(@enableinsecuressl)
+    if(@enable_insecure_ssl)
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE # read into this
     end
-    returnval = http.get(uri.request_uri).body
-    jsonval = JSON.parse(returnval)
-    if(jsonval["operation"]["result"]["status"] == "Success")
-      return jsonval["operation"]["Details"]
+    return_val = http.get(uri.request_uri).body
+    json_val = JSON.parse(return_val)
+    if(json_val["operation"]["result"]["status"] == "Success")
+      return json_val["operation"]["Details"]
     end
     throw :failure
   end
 
-  def self.getresource(resourceid)
-    if(resourceid.nil?)
+  def self.get_resource(resource_id)
+    if(resource_id.nil?)
     #Get All Resouces
       methodUri = "resources?"
     else
     #Get the specific Resource
-      methodUri = "resources/#{resourceid}?"
+      methodUri = "resources/#{resource_id}?"
     end
     return self.get(methodUri)
   end
 
-  def self.getresourceaccount(resourceid, accountid)
+  def self.get_resource_account(resource_id, account_id)
     if(accountid.nil?)
       #Get All Resouces
-      methodUri = "resources/#{resourceid}/accounts?"
+      methodUri = "resources/#{resource_id}/accounts?"
     else
       #Get the specific Resource
-      methodUri = "resources/#{resourceid}/accounts/#{accountid}?"
+      methodUri = "resources/#{resource_id}/accounts/#{account_id}?"
     end
     return self.get(methodUri)
   end
 
-  def self.getresourceaccountpassword(resourceid, accountid)
+  def self.get_resource_account_password(resource_id, account_id)
     if(resourceid.is_a? Integer and accountid.is_a? Integer)
       #Get All Resouces
-      methodUri = "resources/#{resourceid}/accounts?"
+      methodUri = "resources/#{resource_id}/accounts/#{account_id}/password?"
     else
       #Get the specific Resource
-      methodUri = "resources/#{resourceid}/accounts/#{accountid}?"
+      methodUri = self.get_resource_account_id(resource_id,account_id)
+      id_fetch = self.get(methodUri)
+      methodUri = "resources/#{resource_id}/accounts/#{account_id}/password?"
     end
     return self.get(methodUri)
   end
 
-  def self.getresourceid
+  def self.get_resource_id
     if(resourceid.nil?)
       #Get All Resouces
       methodUri = "https://<Host-Name-of-PMP-Server OR IP address>:7272/restapi/json /v1/resources?AUTHTOKEN=#{@apikey}"
@@ -71,15 +73,15 @@ class PasswordManagerProRestClient
     return resp.body
   end
 
-  def self.getresourceaccountid
+  def self.get_resource_account_id(resource_name, account_name)
     if(resourceid.nil?)
       #Get All Resouces
-      methodUri = "https://<Host-Name-of-PMP-Server OR IP address>:7272/restapi/json /v1/resources?AUTHTOKEN=#{@apikey}"
+      methodUri = "https://<Host-Name-of-PMP-Server OR IP address>:7272/restapi/json /v1/resources?AUTHTOKEN=#{resource_name}"
     else
       #Get the specific Resource
       methodUri = "https://<Host-Name-of-PMP-Server OR IP address>:7272/restapi/json /v1/resources/<Resource ID>"
     end
-    resp = Net::HTTP.get_response(URI.parse(methodUri))
+    resp = Net::HTTP.get_response(URI.parse(account_name))
     return resp.body
   end
 end
