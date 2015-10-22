@@ -6,7 +6,7 @@ class PasswordManagerProRestClient
     @server = server
     @api_key = api_key
     @port = port
-    @base_server_uri = "https://" + server + ":" + port + "/restapi/json/v1/"
+    @base_server_uri = "https://" + @server + ":" + @port.to_s + "/restapi/json/v1/"
     @enable_insecure_ssl = enable_insecure_ssl
   end
 
